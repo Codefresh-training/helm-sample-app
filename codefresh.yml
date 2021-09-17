@@ -2,7 +2,6 @@ version: '1.0'
 stages:
   - prepare
   - build
-  - store
   - deploy
 steps:
   clone:
@@ -16,20 +15,22 @@ steps:
     title: Building Docker Image
     stage: build
     type: build
+    registry: quay
     working_directory: ./helm-sample-app
-    image_name: cf-training/helm-go-example
+    image_name: codefresh-training/helm-go-example
     tag: 2.0.0
     dockerfile: Dockerfile
   store:
     title: Storing Helm Chart
     type: helm
-    stage: store
+    stage: build
     working_directory: ./helm-sample-app
     arguments:
       action: push
       helm_version: 3.0.2
       chart_name: charts/helm-example
       kube_context: training
+      chart_repo_url: 'cm://h.cfcr.io/codefresh-training/default'
   deploy:
     type: helm
     stage: deploy
@@ -37,11 +38,12 @@ steps:
     arguments:
       action: install
       chart_name: charts/helm-example
-      release_name: my-go-chart-prod
+      release_name: my-go-chart-prod-<username>
       helm_version: 3.0.2
       kube_context: training
+      namespace: <username>
       custom_values:
         - 'buildID=${{CF_BUILD_ID}}'
         - 'image_pullPolicy=Always'
         - 'image_tag=2.0.0'
-        - 'replicaCount=3'
+        - 'replicaCount=2'
