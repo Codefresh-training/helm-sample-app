@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   pullPolicy: IfNotPresent
-  repository: quayi.io/codefresh-training/helm-go-example
+  repository: quay.io/codefresh-training/helm-go-example
 
 imagePullSecrets: []
 nameOverride: ""
